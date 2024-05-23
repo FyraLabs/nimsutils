@@ -43,7 +43,7 @@ There are more examples in `test.nims`.
 Yes, you heard me: start using `nimsutils` by just:
 1. cloning this repository:
 ```sh
-git clone https://github.com/FyraLabs/nimsutils
+git clone https://github.com/FyraLabs/nimsutils --depth 1
 ```
 2. ```nim
    import nimsutils

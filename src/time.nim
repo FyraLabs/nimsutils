@@ -6,6 +6,7 @@ import exec
 
 proc epochNanoNow*(): uint64 =
   # FIXME: are there faster ways to get the time?
+  # FIXME: this only works on unix for obvious reasons
   # WARN: NEVER import `std/times` or `std/monotimes`
   #  ...: which doesn't work in nimscript
   let (s, _) = run_quiet "/usr/bin/date '+%s %N'"

@@ -1,6 +1,6 @@
 import common_imports
+import_macros
 import nimsutils
-import basedefs
 
 proc run*(cmd: string; quiet=false): tuple[output: string, exitCode: int] {.discardable.} =
   if not quiet:
@@ -13,27 +13,13 @@ proc run*(cmd: string; quiet=false): tuple[output: string, exitCode: int] {.disc
         echo "│ "&line
       echo fmt"└─ Command returned exit code {$result.exitCode}"
       quit 1
-  except:
+  except CatchableError as e:
     echo fmt"Fail to execute command: {cmd}"
-    quit 1
+    raise e
 
 proc run_quiet*(cmd: string): tuple[output: string, exitCode: int] {.discardable.} = run(cmd, true)
 
-proc `/`*(left, right: string): string =
-  assert not right.startsWith '/'
-  if left.endsWith '/':
-    return left & right
-  return left & '/' & right
-
-DESTDIR @= "/usr"
-PKGCONFIG_CHECK @= "1"
-
-proc pkgconfig*(id: string): bool =
-  if not PKGCONFIG_CHECK.asBool: return
-  let f = "pkgconfig/"&id&".pc"
-  return fileExists("/usr/lib64/"&f) or fileExists("/usr/lib/"&f) or fileExists(
-      DESTDIR/"lib64/"&f) or fileExists(DESTDIR/"lib64/"&f)
-  # if not x:
-  #   error "Cannot find pkgconfig for: " & id
-  #   error "This package is a required build dependency."
-  #   quit 1
+macro sh*(body: untyped): tuple[output: string, exitCode: int] {.discardable.} =
+  body.expectKind nnkStmtList
+  for stmt in body:
+    echo repr stmt

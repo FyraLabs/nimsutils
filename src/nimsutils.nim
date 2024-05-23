@@ -1,16 +1,19 @@
 #!/usr/bin/env nim
 import common_imports
+export common_imports
 import_macros
-import basedefs
+
+# ┌————————————————————————————————————————————————————————————————————————————┐
+# │                   Forward declarations and Miscellaneous                   │
+# └————————————————————————————————————————————————————————————————————————————┘
 
 proc error*(msg: string) {.raises: [].}
 
 proc env*(key: string, default: string = ""): string {.raises: [].} =
   suppress KeyError: return CMDENVS[key]
   if existsEnv key: return getEnv key
-  if default != "": return default
-  error fmt"`${key}` is undefined and no default value is provided."
-  error fmt"Please define it as an argument (e.g. `{key}=my_value`) or as an environment variable."
+  error "`$"&key&"` is undefined and no default value is provided."
+  error "Please define it as an argument (e.g. `"&key&"=my_value`) or as an environment variable."
   quit 1
 
 macro `@=`*(key: untyped, value: string) =
@@ -20,7 +23,28 @@ macro `@=`*(key: untyped, value: string) =
     let `key` = env(`s`, `value`)
     when isTopLevel(): export `key`
 
-# === logging ===
+proc `/`*(left, right: string): string =
+  assert not right.startsWith '/'
+  if left.endsWith '/':
+    return left & right
+  return left & '/' & right
+
+DESTDIR @= "/usr"
+PKGCONFIG_CHECK @= "1"
+
+proc pkgconfig*(id: string): bool =
+  if not PKGCONFIG_CHECK.asBool: return
+  let f = "pkgconfig/"&id&".pc"
+  return fileExists("/usr/lib64/"&f) or fileExists("/usr/lib/"&f) or fileExists(
+      DESTDIR/"lib64/"&f) or fileExists(DESTDIR/"lib64/"&f)
+  # if not x:
+  #   error "Cannot find pkgconfig for: " & id
+  #   error "This package is a required build dependency."
+  #   quit 1
+
+# ┌————————————————————————————————————————————————————————————————————————————┐
+# │                                  Logging                                   │
+# └————————————————————————————————————————————————————————————————————————————┘
 
 type Color* = tuple[r, g, b: int]
 
@@ -68,13 +92,21 @@ proc log*(level: LogLevel, msg: string) {.raises: [].} =
   except ValueError:
     return
   COLOR @= "1"
-  let namecolor = if COLOR.asBool: $level.namecolor else: ""
-  let textcolor = if COLOR.asBool: $level.textcolor else: ""
+  let namecolor =
+    try:
+      assert COLOR.asBool
+      $level.namecolor
+    except AssertionDefect, ValueError: ""
+  let textcolor =
+    try:
+      assert COLOR.asBool
+      $level.textcolor
+    except: ""
   let reset = if COLOR.asBool: reset_ansi else: ""
   let lines = msg.splitLines
-  echo fmt"{namecolor}{level.name:>10}:{textcolor} {lines[0]}{reset}"
+  echo namecolor&(level.name:>10)&':'&textcolor&" "&lines[0]&reset
   for line in lines[1..^1]:
-    echo fmt"{namecolor}        ...{textcolor} {line}{reset}"
+    echo namecolor&"        ..."&textcolor&' '&line&reset
 
 # colors determined using sonokai: https://github.com/sainnhe/sonokai
 let
@@ -96,6 +128,10 @@ proc warn*(msg: string) = log(logLvlWarn, msg)
 proc error*(msg: string) = log(logLvlError, msg)
 proc fatal*(msg: string) = log(logLvlFatal, msg)
 
-import exec, time, xtask
-
-export exec, basedefs, time, xtask, common_imports
+# ┌————————————————————————————————————————————————————————————————————————————┐
+# │                   End of nimsutils, export other modules                   │
+# └————————————————————————————————————————————————————————————————————————————┘
+import time, xtask
+export time, xtask
+import exec
+export exec
