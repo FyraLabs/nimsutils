@@ -12,6 +12,7 @@ proc error*(msg: string) {.raises: [].}
 proc env*(key: string, default: string = ""): string {.raises: [].} =
   suppress KeyError: return CMDENVS[key]
   if existsEnv key: return getEnv key
+  if default != "": return default
   error "`$"&key&"` is undefined and no default value is provided."
   error "Please define it as an argument (e.g. `"&key&"=my_value`) or as an environment variable."
   quit 1
