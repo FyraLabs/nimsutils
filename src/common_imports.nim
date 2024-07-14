@@ -1,6 +1,6 @@
-import std/[envvars, os, options, strutils, strformat, tables, cmdline, parseopt]
+import std/[envvars, os, options, strutils, strformat, tables, cmdline, parseopt, syncio]
 
-export envvars, os, options, strutils, strformat, tables, cmdline, parseopt
+export envvars, os, options, strutils, strformat, tables, cmdline, parseopt, syncio
 
 template import_macros* {.dirty.} = 
   import std/macros except debug, hint, info, warn, error, echo, `$`
@@ -8,6 +8,7 @@ template import_macros* {.dirty.} =
 import basedefs, btrfmt
 export basedefs, btrfmt
 
-when defined(nimsuggest) and not defined(nimscript):
+# let's also assume if stdout is not available, then we are in nimscript
+when defined(nimsuggest) and not defined(nimscript) or not defined(stdout):
   import system/nimscript except existsEnv # already in system
   export nimscript

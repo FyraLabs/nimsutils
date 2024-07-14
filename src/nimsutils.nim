@@ -129,6 +129,20 @@ proc warn*(msg: string) = log(logLvlWarn, msg)
 proc error*(msg: string) = log(logLvlError, msg)
 proc fatal*(msg: string) = log(logLvlFatal, msg)
 
+when not defined(nimscript):
+  # nimscript has no stdout/stdin
+  proc input*(msg: string = "", lvl: LogLevel = logLvlInfo): string =
+    log(lvl, msg)
+    COLOR @= "1"
+    let reset = if COLOR.asBool: reset_ansi else: ""
+    let namecolor =
+      try:
+        assert COLOR.asBool
+        $lvl.namecolor
+      except AssertionDefect, ValueError: ""
+    stdout.write namecolor&"(Input?)... "&reset
+    stdin.readLine
+
 # ┌————————————————————————————————————————————————————————————————————————————┐
 # │                   End of nimsutils, export other modules                   │
 # └————————————————————————————————————————————————————————————————————————————┘
