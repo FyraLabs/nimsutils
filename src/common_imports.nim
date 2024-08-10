@@ -9,6 +9,6 @@ import basedefs, btrfmt
 export basedefs, btrfmt
 
 # let's also assume if stdout is not available, then we are in nimscript
-when defined(nimsuggest) and not defined(nimscript) or not defined(stdout):
+when defined(nimsuggest) and not defined(nimscript):
   import system/nimscript except existsEnv # already in system
   export nimscript
