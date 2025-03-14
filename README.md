@@ -73,5 +73,10 @@ PR welcomed for adding your project here! :3
 
 Index at <https://fyralabs.github.io/nimsutils/>.
 
+> [!NOTE]
+> If you are encountering `Error: VM problem: dest register is set`,
+> wrap the problematic code (most likely `run()`) inside a `block:` or a function.
+> As to why this happens… Mystery.
+
 [NimScript]: https://nim-lang.org/docs/nims.html
 [Logit]: https://github.com/Miqueas/Logit/blob/main/NimDocs.md
