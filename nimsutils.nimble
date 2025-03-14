@@ -1,4 +1,4 @@
-when not (compiles do: import src/nimsutils):
+when (compiles do: import ./nimsutils):
   import ./nimsutils
 else:
   import src/nimsutils
