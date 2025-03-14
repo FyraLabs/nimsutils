@@ -1,4 +1,7 @@
-import src/nimsutils
+when not (compiles do: import src/nimsutils):
+  import ./nimsutils
+else:
+  import src/nimsutils
 # Package
 
 version       = "0.1.0"
