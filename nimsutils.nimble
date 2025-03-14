@@ -2,7 +2,7 @@ import src/nimsutils
 # Package
 
 version       = "0.1.0"
-author        = "madomado"
+author        = "madonuko"
 description   = "Common utils for Nimscript"
 license       = "MIT"
 srcDir        = "src"

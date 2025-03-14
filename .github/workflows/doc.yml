@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    permissions:
+      pages: write # To deploy to Pages
+      id-token: write # Verify deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docs
+        uses: ire4ever1190/nim-docs-action@v1
+        with:
+          main-file: src/nimsutils.nim
+          deploy: pages
