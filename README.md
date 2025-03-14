@@ -71,5 +71,7 @@ PR welcomed for adding your project here! :3
 
 ## Documentations
 
+Index at <https://fyralabs.github.io/nimsutils/>.
+
 [NimScript]: https://nim-lang.org/docs/nims.html
 [Logit]: https://github.com/Miqueas/Logit/blob/main/NimDocs.md
